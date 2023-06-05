@@ -1,0 +1,56 @@
+version: "3.3"
+services:
+ # PHP-APACHE
+ web1:
+   ports:
+     - "8070:80"
+     - "4441:443"
+   build: './build/php1'
+   volumes:
+     - ./app:/var/www/html
+     - ./build/php1/apache:/etc/apache2/sites-available
+   restart: always
+   depends_on:
+     - mariadb
+   container_name: web1
+
+ web2:
+   ports:
+     - "8071:80"
+     - "4442:443"
+   build: './build/php2'
+   volumes:
+     - ./app:/var/www/html
+     - ./build/php2/apache:/etc/apache2/sites-available
+   restart: always
+   depends_on:
+     - mariadb
+   container_name: web2
+
+   
+   # MARIADB
+ mariadb:
+   ports:
+     - "3310:3306"
+   build: './build/mysql'
+   environment:
+     MYSQL_ROOT_PASSWORD: "1tone"
+     MYSQL_DATABASE: "music_db"
+   restart: always
+   volumes:
+     - ./build/mysql/dbData:/var/lib/mysql
+   container_name: mariadb
+
+   # PHPMYADMIN
+ phpmyadmin:
+   image: phpmyadmin:latest
+   ports:
+     - 8077:80
+   environment:
+     - PMA_ARBITRARY=1
+     - PMA_HOST=mariadb
+   restart: always
+   depends_on:
+     - mariadb
+   container_name: pma
+
